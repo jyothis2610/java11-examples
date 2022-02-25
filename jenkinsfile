@@ -1,0 +1,20 @@
+node('jenkins-master') {
+    properties([pipelineTriggers([upstream('starter')])])
+    stage('git') {
+    git 'https://github.com/jyothis2610/java11-examples.git'
+    }
+    stage('biuld')
+    sh '''
+    echo "PATH=${PATH}"
+    echo "M2_HOME=${M2_HOME}"
+    '''
+    sh '/usr/local/apache-maven-3.8.4/bin/mvn clean package'
+        sh 'mvn clean package'
+    }
+stage('archive'){
+    archiveArtifacts artifacts:'target/*.jar',followsymlinks: false   
+    }
+stage('publish test reports'){
+    junit'**/TEST-*.xml'
+    }
+}
